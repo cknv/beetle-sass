@@ -1,10 +1,15 @@
 import sass
+import os
 
 
-def render_sass(raw_content):
-    return sass.compile(string=raw_content)
+def sass_to_css(path):
+    __, destination = path.split(os.sep, 1)
+    name, __ = os.path.splitext(destination)
+    destination = name + '.css'
+    with open(path, 'r') as fo:
+        return destination, sass.compile(string=fo.read()).encode('utf-8')
 
 
 def register(context, plugin_config):
     sass_extensions = ['sass', 'scss']
-    context.content_renderer.add_renderer(sass_extensions, render_sass)
+    context.includer.add(sass_extensions, sass_to_css)
